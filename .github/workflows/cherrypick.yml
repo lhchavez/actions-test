@@ -27,10 +27,16 @@ jobs:
           exit 0
         fi
 
-        git checkout ${{ matrix.branch }}
-        git switch -c "cherry-pick-${{ github.id }}-${{ matrix.branch }}"
-        git cherry-pick -x ${{ github.sha }}
+        BRANCH_NAME="cherry-pick-${{ github.run_id }}-${{ matrix.branch }}"
+
+        git config --global user.name "release-bot"
+        git config --global user.email "release-bot@libgit2.org"
+
+        git checkout "${{ matrix.branch }}"
+        git switch -c "${BRANCH_NAME}"
+        git cherry-pick -x "${{ github.sha }}"
+        git push --set-upstream origin "${BRANCH_NAME}"
         gh pr create \
-          --base ${{ matrix.branch }} \
-          --title "$(git show --format="%s" --no-patch HEAD)" \
-          --body "$(git show --format="%b" --no-patch HEAD)"
+          --base "${{ matrix.branch }}" \
+          --title "$(git show --no-pager --format="%s" --no-patch HEAD)" \
+          --body "$(git show --no-pager --format="%b" --no-patch HEAD)"
