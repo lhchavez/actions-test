@@ -29,9 +29,20 @@ jobs:
 
         BRANCH_NAME="cherry-pick-${{ github.run_id }}-${{ matrix.branch }}"
 
-        git config --global user.name "release-bot"
-        git config --global user.email "release-bot@libgit2.org"
+        # Setup usernames and authentication
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+        cat <<- EOF > $HOME/.netrc
+        machine github.com
+        login ${{ github.actor }}
+        password ${{ secrets.GITHUB_TOKEN }}
+        machine api.github.com
+        login ${{ github.actor }}
+        password ${{ secrets.GITHUB_TOKEN }}
+        EOF
+        chmod 600 $HOME/.netrc
 
+        # Create the cherry-pick commit and create the PR for it.
         git checkout "${{ matrix.branch }}"
         git switch -c "${BRANCH_NAME}"
         git cherry-pick -x "${{ github.sha }}"
