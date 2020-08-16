@@ -47,7 +47,7 @@ jobs:
         git switch -c "${BRANCH_NAME}"
         git cherry-pick -x "${{ github.sha }}"
         git push --set-upstream origin "${BRANCH_NAME}"
-        gh pr create \
+        GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh pr create \
           --base "${{ matrix.branch }}" \
-          --title "$(git show --no-pager --format="%s" --no-patch HEAD)" \
-          --body "$(git show --no-pager --format="%b" --no-patch HEAD)"
+          --title "$(git --no-pager show --format="%s" --no-patch HEAD)" \
+          --body "$(git --no-pager show --format="%b" --no-patch HEAD)"
