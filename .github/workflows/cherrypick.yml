@@ -22,7 +22,7 @@ jobs:
         fetch-depth: 0
     - name: Create a cherry-pick PR
       run: |
-        if ! git diff --quiet HEAD:vendor/libgit2 HEAD^:vendor/libgit2; then
+        if ! git diff --quiet HEAD^ HEAD -- vendor/libgit2; then
           echo '::warning::Skipping cherry-pick since it is a vendored libgit2 bump'
           exit 0
         fi
